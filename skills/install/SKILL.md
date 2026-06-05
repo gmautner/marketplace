@@ -25,6 +25,8 @@ Install the cofounder into the current project by injecting its instructions int
    ```
    This creates or updates `AGENTS.md` with the cofounder's managed section between `<!-- cofounder:begin -->` and `<!-- cofounder:end -->` markers, and adds a managed `@AGENTS.md` reference to `CLAUDE.md` so Claude (which does not read `AGENTS.md` natively) loads it.
 
+   > **Non-Claude harnesses:** `${CLAUDE_PLUGIN_ROOT}` is substituted only by Claude Code. In Gemini CLI (or any harness that does not substitute it), replace both occurrences of `${CLAUDE_PLUGIN_ROOT}` with the extension's root directory — the parent of the `skills/` folder, shown in the activated skill's resources. The script and its template ship at that root, so the same command works once the path is resolved.
+
 3. **Configure `.claude/settings.json`.** Check if it already exists.
    - If it exists, read it and merge the keys below (preserve any other existing keys). **Remove the `"agent"` key if present** — it is no longer used.
    - If it doesn't exist, create the `.claude/` directory if needed.

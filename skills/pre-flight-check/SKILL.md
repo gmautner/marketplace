@@ -15,7 +15,7 @@ This is the first skill invoked at session start.
 
 ## Step 0 — Version Check
 
-<!-- COFOUNDER_VERSION: 0.21.12 -->
+<!-- COFOUNDER_VERSION: 0.21.14 -->
 
 The `COFOUNDER_VERSION` marker above contains the loaded version of the cofounder plugin.
 
@@ -25,13 +25,25 @@ Use WebFetch to read `https://raw.githubusercontent.com/gmautner/marketplace/ref
 - **Versions match:** Proceed normally.
 - **Check fails** (network error, etc.): Proceed — do not block the session.
 
-> **Note:** `AGENTS.md` (and its `@AGENTS.md` reference in `CLAUDE.md`) is kept in sync automatically by the plugin's `SessionStart` hook at the start of every session — there is no sync step to run here.
+## Keep AGENTS.md current
+
+Read the `cofounder:begin` marker at the top of `AGENTS.md` in the project root; it records the `COFOUNDER_VERSION` the file was generated from. If `AGENTS.md` is missing, or that recorded version differs from the loaded version in the marker above, re-run the injection script to refresh the project's instructions:
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/inject-agents-md.sh "$(pwd)" "${CLAUDE_PLUGIN_ROOT}"
+```
+
+> **Non-Claude harnesses:** `${CLAUDE_PLUGIN_ROOT}` is substituted only by Claude Code. In Gemini CLI (or any harness that does not substitute it), replace both occurrences with the extension's root directory — the parent of the `skills/` folder, shown in the activated skill's resources.
+
+In Claude Code this is normally a **no-op**: the `SessionStart` hook has already re-injected `AGENTS.md` before this skill runs, so the versions match and nothing happens. In a harness without that hook (e.g. Gemini CLI), this is what keeps the project's instructions current after a plugin/extension update.
 
 ## Running the Check
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/pre-flight-check/scripts/preflight.sh
 ```
+
+> **Non-Claude harnesses:** `${CLAUDE_PLUGIN_ROOT}` is substituted only by Claude Code. In Gemini CLI (or any harness that does not substitute it), replace `${CLAUDE_PLUGIN_ROOT}` with the extension's root directory — the parent of the `skills/` folder, shown in the activated skill's resources.
 
 The script exits `0` and prints `PREFLIGHT_PASSED` on success, or exits `1` and
 prints `PREFLIGHT_FAILED` followed by one or more error lines on failure.

@@ -83,6 +83,8 @@ Then run the init script:
 bash ${CLAUDE_PLUGIN_ROOT}/skills/repo-setup/scripts/repo-init.sh <repo-name> [private|public]
 ```
 
+> **Non-Claude harnesses:** `${CLAUDE_PLUGIN_ROOT}` is substituted only by Claude Code. In Gemini CLI (or any harness that does not substitute it), replace `${CLAUDE_PLUGIN_ROOT}` with the extension's root directory — the parent of the `skills/` folder, shown in the activated skill's resources.
+
 The script will:
 1. Initialize a local git repo if `.git/` does not exist
 2. Create an initial empty commit if the repo has no commits

@@ -9,7 +9,9 @@ PLUGIN_JSON="$REPO_DIR/.claude-plugin/plugin.json"
 VERSION=$(jq -r .version "$PLUGIN_JSON")
 SKILL="$REPO_DIR/skills/pre-flight-check/SKILL.md"
 
-sed -i '' "s/COFOUNDER_VERSION: .*/COFOUNDER_VERSION: $VERSION -->/" "$SKILL"
+# Match the full standalone marker comment only, so the version string in prose
+# (e.g. example "cofounder:begin COFOUNDER_VERSION: ..." markers) is never clobbered.
+sed -i '' "s/<!-- COFOUNDER_VERSION: .* -->/<!-- COFOUNDER_VERSION: $VERSION -->/" "$SKILL"
 
 echo "Stamped version $VERSION into $(basename "$SKILL")"
 
@@ -22,4 +24,13 @@ LEGACY_SHIM="$REPO_DIR/plugins/cofounder/.claude-plugin/plugin.json"
 if [ -f "$LEGACY_SHIM" ]; then
   cp "$PLUGIN_JSON" "$LEGACY_SHIM"
   echo "Synced legacy shim at plugins/cofounder/.claude-plugin/plugin.json"
+fi
+
+# Gemini CLI extension manifest. Keep its version in sync with the canonical
+# manifest so one bump drives every harness.
+GEMINI_MANIFEST="$REPO_DIR/gemini-extension.json"
+if [ -f "$GEMINI_MANIFEST" ]; then
+  tmp=$(mktemp)
+  jq --arg v "$VERSION" '.version = $v' "$GEMINI_MANIFEST" > "$tmp" && mv "$tmp" "$GEMINI_MANIFEST"
+  echo "Synced gemini-extension.json to $VERSION"
 fi
